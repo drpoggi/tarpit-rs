@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installing Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Checking out sources
+        uses: actions/checkout@v1
+      - name: Running cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          toolchain: stable
+          args: --release
+      - name: Packaging final binary
+        shell: bash
+        run: |
+          cd target/release
+          tar czvf tarpit-rs.tar.gz tarpit-rs
+          shasum -a 512 tarpit-rs.tar.gz > tarpit-rs.sha512
+      - name: Releasing assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/release/tarpit-rs.tar.gz
+            target/release/tarpit-rs.sha512
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
