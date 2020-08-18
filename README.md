@@ -1,0 +1,1 @@
+A simple SSH tarpit, as a way for me to get my feet wet with Rust. Based on https://nullprogram.com/blog/2019/03/22/ 
